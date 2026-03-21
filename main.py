@@ -81,7 +81,7 @@ def search(contacts):
         print("===Search===\n")
         print("1. Search by name.\n2. Search by number.\n3. Exit.")
         choise = get_choise_search("Select an action: ")
-        if choise == "1":                                               # <--- SEARCH BY NUMBER
+        if choise == "1":                                               # <--- SEARCH BY NAME
             search_name = str(input("\nEnter name: ")).lower()
             found = False
 
