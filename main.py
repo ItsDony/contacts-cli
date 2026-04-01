@@ -1,4 +1,4 @@
-import json
+import json, os
 # ===== CLASS =====
 class Contact:
     def __init__(self, name, number):
@@ -12,35 +12,41 @@ class Contact:
             "number": self.number
         }
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # <--- SAFE METHOD
+FILE_PATH = os.path.join(BASE_DIR, "contacts.json")
+
 # ===== LOAD_TXT =====
 def load_contact():
     try:
-        with open("contacts.json", "r", encoding="utf-8") as file:
+        with open(FILE_PATH, "r", encoding="utf-8") as file:
             data = json.load(file)
-            return [Contact(contacts["name"], contacts["number"]) for contacts in data]
+            return [Contact(c["name"], c["number"]) for c in data]
     except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        print("Warning: contacts.json is corrupted. Starting with empty list.")
         return []
 
 # ===== SAVE_TXT =====
 def save_contact(contacts):
-    with open("contacts.json", "w", encoding="utf-8") as file:
-        json.dump([contacts.to_dict() for contacts in contacts], file, ensure_ascii=False, indent=4)
+    with open(FILE_PATH, "w", encoding="utf-8") as file:
+        json.dump([c.to_dict() for c in contacts], file, ensure_ascii=False, indent=4)
 
-# ===== GET_CHOISE =====
-def get_choise(text):
+# ===== GET_CHOICE =====
+def get_choice(text):
     while True:
-        choise = str(input(text))
-        if choise in ("1", "2", "3", "4", "5"):
-            return choise
+        choice = str(input(text))
+        if choice in ("1", "2", "3", "4", "5"):
+            return choice
         else:
             print("\nSuch an action does not exist!")
 
-# ===== GET_CHOISE_SEARCH =====
-def get_choise_search(text):
+# ===== GET_CHOICE_SEARCH =====
+def get_choice_search(text):
     while True:
-        choise_search = str(input(text))
-        if choise_search in ("1", "2", "3"):
-            return choise_search
+        choice_search = str(input(text))
+        if choice_search in ("1", "2", "3"):
+            return choice_search
         else:
             print("\nSuch an action does not exist!")
 
@@ -49,7 +55,7 @@ def get_index(max_len):
     while True:
         try:
             delite = int(input("Enter what you want to delete: ")) - 1
-            if 0 <= delite <= max_len:
+            if 0 <= delite < max_len:
                 return delite
             else:
                 print("\nSuch an action does not exist!")
@@ -80,8 +86,8 @@ def search(contacts):
     else:
         print("===Search===\n")
         print("1. Search by name.\n2. Search by number.\n3. Exit.")
-        choise = get_choise_search("Select an action: ")
-        if choise == "1":                                               # <--- SEARCH BY NAME
+        choice = get_choice_search("Select an action: ")
+        if choice == "1":                                               # <--- SEARCH BY NAME
             search_name = str(input("\nEnter name: ")).lower()
             found = False
 
@@ -92,7 +98,7 @@ def search(contacts):
 
             if not found:
                 print("\nContact not found.")
-        elif choise == "2":                                             # <--- SEARCH BY NUMBER
+        elif choice == "2":                                             # <--- SEARCH BY NUMBER
             search_number = str(input("\nEnter number: ")).lower()
             found = False
 
@@ -103,7 +109,7 @@ def search(contacts):
 
             if not found:
                 print("\nContact not found.")
-        elif choise == "3":                                             # <--- EXIT
+        elif choice == "3":                                             # <--- EXIT
             return
 
 # ===== DELETED CONTACT =====
@@ -124,18 +130,18 @@ def main():
     contacts = load_contact()
     while True:
         print("\n====MENU====\n1. Add contact.\n2. List contacts.\n3. Search.\n4. Remove contact.\n5. Exit.")
-        choise = get_choise("\nChoise an action: ")
-        if choise == "1":                              # <--- ACTION 1
+        choice = get_choice("\nChoice an action: ")
+        if choice == "1":                              # <--- ACTION 1
             add_contact(contacts)
-        elif choise == "2":                            # <--- ACTION 2
+        elif choice == "2":                            # <--- ACTION 2
             print("==List contacts==\n")
             list_contacts(contacts)
             input("\nPress enter to continue...")
-        elif choise == "3":                            # <--- ACTION 3
+        elif choice == "3":                            # <--- ACTION 3
             search(contacts)
-        elif choise == "4":                            # <--- ACTION 4
+        elif choice == "4":                            # <--- ACTION 4
             deleted_contact(contacts)
-        elif choise == "5":                            # <--- ACTION 5
+        elif choice == "5":                            # <--- ACTION 5
             print("\nGood luck!")
             break
 
